@@ -10,9 +10,11 @@ class Main(tk.Frame):
         self.canvas.config(bg="#000000")
         self.canvas.pack(side="top", fill="both", expand=True)
 
-        self.percent_id = self.canvas.create_text(self.canvas_width/2, self.canvas_height/2, text="0%", fill="#FFFFFF", justify="center", font=("Microsoft JhengHei Light", 48))
+        self.percent_id = self.canvas.create_text(self.canvas_width/2, self.canvas_height/2, text="0%", fill="#FFFFFF", justify="center", font=("Microsoft JhengHei Light", 40))
         self.installing_id = self.canvas.create_text(self.canvas_width / 2, (self.canvas_height / 2 - 250), text="Installing Windows 10",
                                                fill="#FFFFFF", justify="center", font=("Microsoft JhengHei Light", 32))
+        self.installing_id = self.canvas.create_text(self.canvas_width / 2, (self.canvas_height / 2 - 180), text="Your PC will restart several times. Sit back and relax.",
+                                               fill="#999999", justify="center", font=("Microsoft YaHei UI", 10))
 
     def on_change_text(self):
         self.canvas.itemconfig(self.text_id, text="Goodbye, world")
