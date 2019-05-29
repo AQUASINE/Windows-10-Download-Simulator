@@ -64,10 +64,12 @@ class Main(tk.Frame):
                                              outline="#3479D7", style="arc", width=4.6, extent=-self.angle_length,
                                              start=self.angle_start)
         self.increase_score()
+    def update_bar(self):
+        self.angle_length = self.score/100.0*360.0
 
     def increase_score(self):
         self.score += self.score_increase
-        self.angle_length = self.score/100.0*360.0
+        self.update_bar()
         self.canvas.itemconfig(self.arc_id, extent=-self.angle_length)
         self.canvas.itemconfig(self.percent_id, text=str(int(self.angle_length / 360 * 100)) + "%")
 
