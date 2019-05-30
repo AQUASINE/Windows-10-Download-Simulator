@@ -3,22 +3,31 @@ import math
 from functools import partial
 
 root = tk.Tk()
+
 class Main(tk.Frame):
     canvas_width = 1920
-    canvas_height = 1000
+    canvas_height = 1080
     score_increase = 1
     x, y = (0, 90)
 
 
-    def __init__(self, *args, **kwargs):
-        tk.Frame.__init__(self, *args, **kwargs)
-        self.curve_radius = 125
+    def __init__(self,  master, **kwargs):
+        tk.Frame.__init__(self,  master, **kwargs)
+        root.bind("<F11>", self.toggle_fullscreen)
+        root.bind("<Escape>", self.end_fullscreen)
+        self.state = True
+        root.attributes("-fullscreen", self.state)
+        master.wm_state("zoomed")
+
+        self.curve_radius = 105
         self.angle_start = 90
         self.score = 20
         self.angle_length = self.score/100.0*360.0
 
-        self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height)
+        self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height, border=0, relief="raised")
         self.canvas.config(bg="#000000")
+        self.canvas.pack_propagate(False)
+
         self.canvas.pack(side="top", fill="both", expand=True)
 
         self.percent_id = self.canvas.create_text(self.canvas_width / 2, self.canvas_height / 2,
@@ -35,7 +44,7 @@ class Main(tk.Frame):
                                                   anchor="center")
         self.copying_files = self.canvas.create_text((self.canvas_width / 2) - 210, (self.canvas_height - 40),
                                                      text="Copying Files",
-                                                     fill="#3479D7", justify="center", font=("Microsoft YaHei UI", 11),
+                                                     fill="#12498F", justify="center", font=("Microsoft YaHei UI", 11),
                                                      anchor="center")
         self.installing_features_id = self.canvas.create_text((self.canvas_width / 2 - 8), (self.canvas_height - 40),
                                                               text="Installing features and drivers",
@@ -53,21 +62,31 @@ class Main(tk.Frame):
         self.oval_id2 = self.canvas.create_oval(self.canvas_width / 2 + self.curve_radius,
                                                 self.canvas_height / 2 + self.curve_radius,
                                                 self.canvas_width / 2 - self.curve_radius,
-                                                self.canvas_height / 2 - self.curve_radius, outline="#666666",
+                                                self.canvas_height / 2 - self.curve_radius, outline="#555555",
                                                 width=3.9)
         self.oval_id = self.canvas.create_oval(self.canvas_width / 2 + self.curve_radius,
                                                self.canvas_height / 2 + self.curve_radius,
                                                self.canvas_width / 2 - self.curve_radius,
-                                               self.canvas_height / 2 - self.curve_radius, outline="#999999", width=3.5)
+                                               self.canvas_height / 2 - self.curve_radius, outline="#666666", width=3.5)
 
         self.arc_id = self.canvas.create_arc((self.canvas_width / 2 + self.curve_radius,
                                               self.canvas_height / 2 + self.curve_radius,
                                               self.canvas_width / 2 - self.curve_radius,
                                               self.canvas_height / 2 - self.curve_radius),
-                                             outline="#3479D7", style="arc", width=4.6, extent=-self.angle_length,
+                                             outline="#12498F", style="arc", width=4.6, extent=-self.angle_length,
                                              start=self.angle_start)
-        self.increase_score()
         root.bind('<Motion>', partial(self.motion))
+
+    def toggle_fullscreen(self, event=None):
+        self.state = not self.state
+        root.attributes("-fullscreen", self.state)
+        return "break"
+
+    def end_fullscreen(self, event=None):
+        self.state = False
+        root.attributes("-fullscreen", False)
+        return "break"
+
     def update_bar(self):
         self.angle_length = self.score/100.0*360.0
 
@@ -80,7 +99,6 @@ class Main(tk.Frame):
     def update_rotation(self, x, y):
         self.angle_start = math.degrees(math.atan2((x-self.canvas_width/2),(y-self.canvas_height/2)))-15-self.angle_length/2
         self.canvas.itemconfig(self.arc_id, start=self.angle_start)
-        print(self.angle_start)
 
     def motion(self, event):
         global x, y
