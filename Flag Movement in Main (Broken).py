@@ -4,7 +4,7 @@ import math
 
 from functools import partial
 
-from PIL import Image, ImageTk
+#from PIL import Image, ImageTk
 
 
 
@@ -175,10 +175,10 @@ class Main(tk.Frame):
         W10y_var = tk.IntVar()
         W10y_var.set(500)
         
-        image10 = "H:\Compsci\Final Project\Win 10 Flag.gif"
-        photo10 = tk.PhotoImage(file='H:\Compsci\Final Project\Win 10 Flag.gif')
+        self.image10 = "C:\\Users\sccha\PycharmProjects\Windows-10-Download-Simulator\project\windows10.png"
+        self.photo10 = tk.PhotoImage(file=self.image10)
 
-        w10item = self.canvas.create_image(W10x_var.get(), W10y_var.get(), image=photo10) # <--- Save the return value of the create_* method.
+        w10item = self.canvas.create_image(550, 550, image=self.photo10) # <--- Save the return value of the create_* method.
 
 
     def toggle_fullscreen(self, event=None):
