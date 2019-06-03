@@ -4,7 +4,6 @@ import math
 
 from functools import partial
 import os
-#from Pillow import Image, ImageTk
 
 
 root = tk.Tk()
@@ -157,7 +156,7 @@ class Main(tk.Frame):
         W10y_var = tk.IntVar()
         W10y_var.set(500)
 
-        self.image10 = os.getcwd() + ".\windows10.png"
+        self.image10 = os.getcwd() + "\windows10.gif"
         self.photo10 = tk.PhotoImage(file=self.image10)
 
         self.w10item = self.canvas.create_image(550, 550, image=self.photo10)  # <--- Save the return value of the create_* method.
