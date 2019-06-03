@@ -6,8 +6,11 @@ from PIL import Image
 
 if __name__ == "__main__":
     def shrink(img, size):
-        if img.length > size:
-            img.resize(size, img.width / size)
+        if img.size[0] > size:
+            img = img.resize((size, int(img.size[1]/img.size[0]*size)), resample=0)
+        else:
+            img = img.resize((int(img.size[0]/img.size[1]*size), size), resample=0)
+        return img
 
 
     def get_images(directory=None):
@@ -37,7 +40,7 @@ if __name__ == "__main__":
         return image_list, file_list
 
 
-    def round_corners_of_all_images(directory=None):
+    def resize_all_images(directory=None):
         """ Saves a modfied version of each image in directory.
 
         Uses current directory if no directory is specified.
@@ -64,9 +67,9 @@ if __name__ == "__main__":
             filename, filetype = os.path.splitext(file_list[n])
 
             # Round the corners with radius = 30% of short side
-            new_image = shrink(image_list[n], 120)
+            new_image = shrink(image_list[n], 70)
             # save the altered image, suing PNG to retain transparency
             new_image_filename = os.path.join(new_directory, filename + '.png')
             new_image.save(new_image_filename)
 
-    def resize()
+    resize_all_images("C:\\Users\sccha\PycharmProjects\Windows-10-Download-Simulator")
