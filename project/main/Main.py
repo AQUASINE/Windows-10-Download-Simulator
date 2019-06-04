@@ -1,22 +1,19 @@
 import tkinter as tk
-
 import math
-
 from functools import partial
 import os
-
+import Enemy
+import time
 
 root = tk.Tk()
 
 
 class Main(tk.Frame):
+    global x, y
     canvas_width = 1920
-
     canvas_height = 1080
-
     score_increase = 1
-
-    x, y = (0, 90)
+    x, y = 0, 90
 
     def __init__(self, master, **kwargs):
 
@@ -28,7 +25,7 @@ class Main(tk.Frame):
         master.wm_state("zoomed")
         self.curve_radius = 105
         self.angle_start = 90
-        self.score = 20
+        self.score = 0
         self.angle_length = self.score / 100.0 * 360.0
         self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height, border=0, relief="raised")
         self.canvas.config(bg="#000000")
@@ -81,27 +78,28 @@ class Main(tk.Frame):
         root.bind('<Motion>', partial(self.motion))
 
         # Ian's Place
-        x_intvar = tk.IntVar()
-        x_intvar.set(150)
-        y_intvar = tk.IntVar()
-        y_intvar.set(150)
+        self.x_intvar = tk.IntVar()
+        self.x_intvar.set(150)
+        self.y_intvar = tk.IntVar()
+        self.y_intvar.set(150)
 
-        speed_intvar = tk.IntVar()
-        speed_intvar.set(15)
-        W10Direction_intvar = tk.IntVar()
-        W10Direction_intvar.set(1)
+        self.speed_intvar = tk.IntVar()
+        self.speed_intvar.set(15)
+        self.img1_direction_intvar = tk.IntVar()
+        self.img1_direction_intvar.set(1)
 
-        W10Direction = 1
+        self.img1_direction = 1
 
         # Initializes Windows 10 center coordinates
-        W10x_var = tk.IntVar()
-        W10x_var.set(300)
-        W10y_var = tk.IntVar()
-        W10y_var.set(500)
+        self.img1_x_var = tk.IntVar()
+        self.img1_x_var.set(300)
+        self.img1_y_var = tk.IntVar()
+        self.img1_y_var.set(500)
 
-        self.image10 = os.getcwd() + "\Win10.png"
-        self.photo10 = tk.PhotoImage(file=self.image10)
-        self.w10item = self.canvas.create_image(550, 550, image=self.photo10)  # <--- Save the return value of the create_* method.
+        self.object1 = Enemy.Enemy()
+        self.object1.create("\modified_img\Win10.png", self.canvas)
+        self.object1.spawn()
+        root.after(200, self.enemy_animation)
 
     def toggle_fullscreen(self, event=None):
         self.state = not self.state
@@ -114,17 +112,21 @@ class Main(tk.Frame):
         return "break"
 
     def update_bar(self):
+        global x, y
         self.angle_length = self.score / 100.0 * 360.0
+        self.update_rotation(x, y)
+
 
     def increase_score(self):
         self.score += self.score_increase
         self.update_bar()
         self.canvas.itemconfig(self.arc_id, extent=-self.angle_length)
         self.canvas.itemconfig(self.percent_id, text=str(int(self.angle_length / 360 * 100)) + "%")
+        self.object1.update_speed(1.02)
 
     def update_rotation(self, x, y):
-        self.angle_start = math.degrees(
-            math.atan2((x - self.canvas_width / 2), (y - self.canvas_height / 2))) - 15 - self.angle_length / 2
+        self.angle_start = (math.degrees(
+            math.atan2((x - self.canvas_width / 2), (y - self.canvas_height / 2))) + .5 * self.angle_length + 270)
         self.canvas.itemconfig(self.arc_id, start=self.angle_start)
 
     def motion(self, event):
@@ -132,6 +134,23 @@ class Main(tk.Frame):
         x, y = event.x, event.y
         self.update_rotation(x, y)
 
+    def enemy_animation(self):
+        self.object1.move_towards_center()
+        if (math.sqrt(math.pow(.5*float(self.canvas_width) - float(self.object1.x_var), 2))) < float(self.curve_radius) + 8.0:
+            if (self.angle_start + self.angle_length - 90) > self.object1.angle > self.angle_start - 90:
+                self.object1.reset_speed()
+                self.reset_score()
+            else:
+                self.increase_score()
+            print(self.angle_start + self.angle_length, self.object1.angle, self.angle_start)
+            self.object1.spawn()
+        root.after(30, self.enemy_animation)
+
+    def reset_score(self):
+        self.score = 0
+        self.update_bar()
+        self.canvas.itemconfig(self.arc_id, extent=-self.angle_length)
+        self.canvas.itemconfig(self.percent_id, text=str(int(self.angle_length / 360 * 100)) + "%")
 
 if __name__ == "__main__":
     view = Main(root)

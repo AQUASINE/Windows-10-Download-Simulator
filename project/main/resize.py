@@ -52,7 +52,7 @@ if __name__ == "__main__":
             directory = os.getcwd()  # Use working directory if unspecified
 
         # Create a new directory 'modified'
-        new_directory = os.path.join(directory, 'modified')
+        new_directory = os.path.join(os.path.abspath(os.path.join(directory, os.pardir)), 'modified_img')
         try:
             os.mkdir(new_directory)
         except OSError:
@@ -60,16 +60,15 @@ if __name__ == "__main__":
 
         # load all the images
         image_list, file_list = get_images(directory)
-
         # go through the images and save modified versions
         for n in range(len(image_list)):
             # Parse the filename
             filename, filetype = os.path.splitext(file_list[n])
 
             # Round the corners with radius = 30% of short side
-            new_image = shrink(image_list[n], 70)
+            new_image = shrink(image_list[n], 40)
             # save the altered image, suing PNG to retain transparency
             new_image_filename = os.path.join(new_directory, filename + '.png')
             new_image.save(new_image_filename)
 
-    resize_all_images("C:\\Users\sccha\PycharmProjects\Windows-10-Download-Simulator")
+    resize_all_images(os.getcwd() + "\original_img")
