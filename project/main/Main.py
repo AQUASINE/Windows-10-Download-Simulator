@@ -25,7 +25,7 @@ class Main(tk.Frame):
         master.wm_state("zoomed")
         self.curve_radius = 105
         self.angle_start = 90
-        self.score = 0
+        self.score = 15
         self.angle_length = self.score / 100.0 * 360.0
         self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height, border=0, relief="raised")
         self.canvas.config(bg="#000000")
@@ -137,12 +137,12 @@ class Main(tk.Frame):
     def enemy_animation(self):
         self.object1.move_towards_center()
         if (math.sqrt(math.pow(.5*float(self.canvas_width) - float(self.object1.x_var), 2))) < float(self.curve_radius) + 8.0:
-            if (self.angle_start + self.angle_length - 90) > self.object1.angle > self.angle_start - 90:
+            if (self.angle_start + self.angle_length - 270) > self.object1.angle - 180> self.angle_start - 270:
                 self.object1.reset_speed()
                 self.reset_score()
             else:
                 self.increase_score()
-            print(self.angle_start + self.angle_length, self.object1.angle, self.angle_start)
+            print(self.angle_start + self.angle_length - 270, self.object1.angle - 180, self.angle_start - 270)
             self.object1.spawn()
         root.after(30, self.enemy_animation)
 

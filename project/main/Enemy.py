@@ -61,7 +61,7 @@ class Enemy(object):
         if edge == 4:
             self.move(random.randint(0,self.canvas_width),self.canvas_height)
 
-        self.angle = (450 + math.degrees(math.atan2((h_width - self.x_var),(h_height-self.y_var))))
+        self.angle = (90 + math.degrees(math.atan2((h_width - self.x_var),(h_height-self.y_var))))
 
         self.canvas.itemconfig(self.item_id, state="normal")
         self.canvas.itemconfig(self.arc_id, start=self.angle)
