@@ -1,0 +1,1 @@
+﻿x = MsgBox("System Failure. Deleting System32... Please Wait.", 16, "Critical Error")
