@@ -8,6 +8,7 @@ import random
 import sys
 from subprocess import Popen
 import subprocess
+
 root = tk.Tk()
 
 
@@ -19,14 +20,14 @@ class Main(tk.Frame):
     x, y = 0, 90
 
     def __init__(self, master, **kwargs):
-        #launches the canvas in fullscreen
+        # launches the canvas in fullscreen
         tk.Frame.__init__(self, master, **kwargs)
         root.bind("<F11>", self.toggle_fullscreen)
         root.bind("<Escape>", self.end_fullscreen)
         self.state = True
         root.attributes("-fullscreen", self.state)
         master.wm_state("zoomed")
-        #assigns all the variables
+        # assigns all the variables
         self.curve_radius = 105
         self.angle_start = 90
         self.score = 0
@@ -36,7 +37,7 @@ class Main(tk.Frame):
         self.canvas.config(bg="#000000")
         self.canvas.pack_propagate(False)
         self.canvas.pack(side="top", fill="both", expand=True)
-        #make canvas components
+        # make canvas components
         self.percent_id = self.canvas.create_text(self.canvas_width / 2, self.canvas_height / 2,
                                                   text=str(int(self.angle_length / 360 * 100)) + "%", fill="#FFFFFF",
                                                   justify="center", font=("Microsoft JhengHei Light", 40),
@@ -116,57 +117,68 @@ class Main(tk.Frame):
         self.state = False
         root.attributes("-fullscreen", False)
         return "break"
-    #update bar's position
+
+    # update bar's position
     def update_bar(self):
         global x, y
         self.angle_length = self.score / 100.0 * 360.0
         self.update_rotation(x, y)
 
-    #increases percent by 1
+    # increases percent by 1
     def increase_score(self):
         if self.score < 100:
             self.score += self.score_increase
             self.update_bar()
             self.canvas.itemconfig(self.arc_id, extent=-self.angle_length)
-            self.canvas.itemconfig(self.percent_id, text=str(int(self.angle_length / 360 * 100)) + "%")
+            self.canvas.itemconfig(self.percent_id, text=str(self.score) + "%")
             self.object1.update_speed(1.015)
         else:
             self.reset_score()
             self.object1.reset_speed()
             self.level_up()
-            self.object1.update_speed(1 + self.level/3)
+            self.object1.update_speed(1 + self.level / 3)
 
-    #increases level by 1
+    # increases level by 1
     def level_up(self):
         self.level += 1
         self.canvas.itemconfig(self.installing_id, text="Installing Windows " + str(self.level))
 
-    #calculate the bar's rotation from the mouse movement
+    # calculate the bar's rotation from the mouse movement
     def update_rotation(self, x, y):
         self.angle_start = 270 + (math.degrees(
             math.atan2((x - self.canvas_width / 2), (y - self.canvas_height / 2))) + .5 * self.angle_length)
         self.canvas.itemconfig(self.arc_id, start=self.angle_start)
 
-    #check for mouse movement
+    # check for mouse movement
     def motion(self, event):
         global x, y
         x, y = event.x, event.y
         self.update_rotation(x, y)
 
-    #moves the windows logos towards the center until it hits the circle
+    # moves the windows logos towards the center until it hits the circle
     def enemy_animation(self):
         self.object1.move_towards_center()
-#        self.canvas.itemconfig(self.installing_features_id, text=round(math.sqrt(math.pow(.5*float(self.canvas_width) - float(self.object1.x_var), 2))))
-        if (math.sqrt(math.pow(.5*float(self.canvas_width) - float(self.object1.x_var), 2))) < float(self.curve_radius) + 8.0:
-            print(self.angle_start - self.angle_length, self.object1.angle, self.angle_start,
-                  ((self.angle_start - self.angle_length) > self.object1.angle> self.angle_start))
-            if (self.angle_start - self.angle_length) > self.object1.angle > self.angle_start or (self.angle_start - self.angle_length) < self.object1.angle < self.angle_start:
-                self.object1.reset_speed()
-                self.reset_score()
-                self.game_over()
+        if (math.sqrt(math.pow(.5 * float(self.canvas_width) - float(self.object1.x_var), 2))) < float(
+                self.curve_radius) + 8.0:
+            self.increase_score()
+            if self.object1.edge in [1, 2]:
+                if (self.angle_start - self.angle_length) > self.object1.angle > self.angle_start or (
+                        self.angle_start - self.angle_length) < self.object1.angle < self.angle_start:
+                    if self.score != 0:
+                        self.object1.reset_speed()
+                        self.reset_score()
+                        self.game_over()
+                self.object1.spawn()
             else:
-                self.increase_score()
-            self.object1.spawn()
+                if (self.angle_start - self.angle_length - 360) > self.object1.angle > self.angle_start - 360 or (
+                        self.angle_start - self.angle_length - 360) < self.object1.angle < self.angle_start - 360:
+                    if self.score != 0:
+                        self.object1.reset_speed()
+                        self.reset_score()
+                        self.game_over()
+                self.object1.spawn()
+
+
         root.after(16, self.enemy_animation)
 
     def reset_score(self):
@@ -175,9 +187,10 @@ class Main(tk.Frame):
         self.canvas.itemconfig(self.arc_id, extent=-self.angle_length)
         self.canvas.itemconfig(self.percent_id, text=str(int(self.angle_length / 360 * 100)) + "%")
 
-    #fun commands!
+    # fun commands!
     def game_over(self):
-            os.system(os.getcwd() + "\popups\msg" + str(random.randint(1,20)) + ".vbs")
+        os.system(os.getcwd() + "\popups\msg" + str(random.randint(1, 20)) + ".vbs")
+
 
 if __name__ == "__main__":
     view = Main(root)
